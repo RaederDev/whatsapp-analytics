@@ -1,27 +1,28 @@
 import { Component, ViewChild } from '@angular/core';
-import { App, ionicBootstrap, Platform, Nav } from 'ionic-angular';
-import { StatusBar } from 'ionic-native';
+import { Nav, Platform } from 'ionic-angular';
+import { StatusBar, Splashscreen } from 'ionic-native';
 
-import { Page1 } from './pages/page1/page1';
-import { Page2 } from './pages/page2/page2';
+import { Home } from '../pages/home/home';
+import { Page2 } from '../pages/page2/page2';
+
 
 @Component({
-  templateUrl: 'build/app.html'
+  templateUrl: 'app.html'
 })
-class MyApp {
+export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = Page1;
+  rootPage: any = Home;
 
-  pages: Array<{title: string, component: any}>
+  pages: Array<{title: string, component: any}>;
 
-  constructor(private platform: Platform) {
+  constructor(public platform: Platform) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Page uno', component: Page1 },
-      { title: 'Page dos', component: Page2 }
+      { title: 'Home', component: Home },
+      { title: 'Page Two', component: Page2 }
     ];
 
   }
@@ -31,6 +32,7 @@ class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
+      Splashscreen.hide();
     });
   }
 
@@ -40,5 +42,3 @@ class MyApp {
     this.nav.setRoot(page.component);
   }
 }
-
-ionicBootstrap(MyApp);

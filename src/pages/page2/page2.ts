@@ -1,15 +1,17 @@
-import { Component } from "@angular/core";
+import { Component } from '@angular/core';
+
 import { NavController, NavParams } from 'ionic-angular';
 
 @Component({
-  templateUrl: 'build/pages/page2/page2.html'
+  selector: 'page-page2',
+  templateUrl: 'page2.html'
 })
 export class Page2 {
   selectedItem: any;
   icons: string[];
   items: Array<{title: string, note: string, icon: string}>;
 
-  constructor(private nav: NavController, navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
@@ -18,7 +20,7 @@ export class Page2 {
     'american-football', 'boat', 'bluetooth', 'build'];
 
     this.items = [];
-    for(let i = 1; i < 11; i++) {
+    for (let i = 1; i < 11; i++) {
       this.items.push({
         title: 'Item ' + i,
         note: 'This is item #' + i,
@@ -29,7 +31,7 @@ export class Page2 {
 
   itemTapped(event, item) {
     // That's right, we're pushing to ourselves!
-    this.nav.push(Page2, {
+    this.navCtrl.push(Page2, {
       item: item
     });
   }
