@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve"
+    "ionic:serve": "ionic-app-scripts serve",
+    "ionic:watch": "ionic-app-scripts watch"
   },
   "dependencies": {
     "@angular/common": "2.1.1",
@@ -21,6 +22,7 @@
     "ionic-angular": "2.0.0-rc.2",
     "ionic-native": "2.2.3",
     "ionicons": "3.0.0",
+    "lodash": "^4.16.6",
     "rxjs": "5.0.0-beta.12",
     "zone.js": "0.6.21"
   },
@@ -34,7 +36,10 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-console",
     "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard"
+    "cordova-plugin-root",
+    "cordova-plugin-file",
+    "ionic-plugin-keyboard",
+    "cordova-plugin-spinner"
   ],
   "cordovaPlatforms": [],
   "description": "whatsapp-analytics: An Ionic project"
