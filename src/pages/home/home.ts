@@ -37,6 +37,9 @@ export class Home {
     this.repository.fetchAllContacts().then((contacts) => {
       console.log(contacts);
     }, console.error.bind(console));
+    this.repository.fetchAllGroups().then((contacts) => {
+      console.log(contacts);
+    }, console.error.bind(console));
   }
 
 }

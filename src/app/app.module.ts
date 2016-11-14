@@ -9,6 +9,7 @@ import {CordovaPluginRoot} from "../native/cordova-plugin-root.service";
 import {CordovaPluginSpinner} from "../native/cordova-plugin-spinner.service";
 import {CONFIG} from "./app.config";
 import {RepositoryFactory} from "../shared/data-access/repository-factory.service";
+import {SQLitePluginRepository} from "../shared/data-access/sqlite-plugin-repository";
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {RepositoryFactory} from "../shared/data-access/repository-factory.servic
     FileUtils,
     CordovaPluginRoot,
     CordovaPluginSpinner,
-    RepositoryFactory
+    RepositoryFactory,
+    SQLitePluginRepository
   ]
 })
 export class AppModule {

@@ -3,6 +3,7 @@ import {Contact} from "./entity/contact";
 
 interface Repository {
   fetchAllContacts: () => Promise<Array<Contact>>;
+  fetchAllGroups: () => Promise<Array<Contact>>;
 }
 
 export default Repository;

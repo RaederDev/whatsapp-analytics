@@ -1,4 +1,8 @@
 import {Entity} from "./abstract.entity";
+import {endsWith} from "lodash/fp";
+
+//numbers ending with this string indicate a group
+const GROUP_IDENTIFIER = '@s.whatsapp.net';
 
 export class Contact extends Entity {
 
@@ -21,6 +25,10 @@ export class Contact extends Entity {
       number: 'number',
       displayName: 'display_name'
     });
+  }
+
+  isGroup() {
+    return endsWith(GROUP_IDENTIFIER, this.number);
   }
 
 }

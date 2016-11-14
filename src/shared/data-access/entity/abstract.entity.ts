@@ -18,16 +18,17 @@ export abstract class Entity {
     }
   }
 
-  public copyColumnsToProperties(columns: any): void {
+  public copyColumnsToProperties(columns: any): Entity {
     const keys = Object.keys(columns);
     keys.forEach(key => {
       const propertyName = this.columnToPropertyMap[key];
       this[propertyName] = columns[key];
     });
+    return this;
   }
 
   protected clearEntity(): void {
-    Object.keys(this.columnToPropertyMap).forEach(key => this[key] = null);
+    Object.keys(this.propertiesToColumnsMap).forEach(key => this[key] = null);
   }
 
   protected setPropertiesToColumnsMap(map: {}) {
