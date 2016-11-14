@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {File} from "ionic-native";
+import {File, DirectoryEntry} from "ionic-native";
 import {CordovaPluginRoot} from "../native/cordova-plugin-root.service";
 import {Config} from "ionic-angular";
 import {compact} from "lodash/fp";
@@ -27,16 +27,25 @@ export class FileUtils {
     return new Promise((resolve, reject) => {
       this.cordovaPluginRoot.isAvailable().then(res => {
 
-        const targetDir: string = this.getCacheDirectory();
-        const promises = this.whatsAppDatabases.map(db => {
-          return this.cordovaPluginRoot.run(`cp ${this.whatsAppDatabaseFolder}${db} ${targetDir}`);
-        });
+        if (!res) {
+          reject('Root access not granted');
+          return;
+        }
 
-        Promise.all(promises)
-          .then(this.doAllDatabasesExist.bind(this))
-          .then(resolve)
-          .catch(reject);
+        this.createDatabaseDirectory().then(() => {
 
+          const targetDir: string = this.getDatabaseDirectory();
+          const promises = this.whatsAppDatabases.map(db => {
+            //cp is not available on all devices so we have to cat the file instead
+            return this.cordovaPluginRoot.run(`cat ${this.whatsAppDatabaseFolder}${db} > ${targetDir}${db}`);
+          });
+
+          Promise.all(promises)
+            .then(this.doAllDatabasesExist.bind(this))
+            .then(resolve)
+            .catch(reject);
+
+        }).catch(reject);
       }).catch(reject);
     });
   }
@@ -48,7 +57,7 @@ export class FileUtils {
    */
   private doAllDatabasesExist(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      const targetDir: string = `file://${this.getCacheDirectory()}`;
+      const targetDir: string = `file://${this.getDatabaseDirectory()}`;
       const promises = this.whatsAppDatabases.map(File.checkFile.bind(File, targetDir));
       Promise.all(promises).then(
         //check if we have any falsey values in the result array, if we do not all databases have been copied
@@ -57,8 +66,48 @@ export class FileUtils {
     });
   }
 
-  private getCacheDirectory(): string {
-    return cordova.file.cacheDirectory.replace(/^file:\/\//, '');
+  /**
+   * We create all database files as empty stubs with phonegap.
+   * This way if we cat into them later as root we don't need to fix the permissions,
+   * since only the file content changes and not the permissions.
+   *
+   * @param directoryEntry
+   */
+  private touchDatabaseFiles(directoryEntry: DirectoryEntry) {
+    return Promise.all(this.whatsAppDatabases.map(db => {
+      return new Promise((resolve, reject) => {
+        directoryEntry.getFile(db, {create: true, exclusive: false}, resolve, reject);
+      });
+    }));
+  }
+
+  /**
+   * Creates the database directory where we'll store all of the WA databases.
+   * Also invokes the touchDatabaseFiles method to create empty files
+   */
+  private createDatabaseDirectory() {
+    return new Promise((resolve, reject) => {
+
+      File.resolveDirectoryUrl(this.getBaseFileUrl())
+        .then((entry: DirectoryEntry) => {
+          return File.getDirectory(entry, 'databases', {create: true});
+        })
+        .then((databaseDir: DirectoryEntry) => {
+          return this.touchDatabaseFiles(databaseDir)
+        })
+        .then(resolve)
+        .catch(reject);
+
+    });
+  }
+
+  private getDatabaseDirectory(): string {
+    const base = cordova.file.applicationStorageDirectory.replace(/^file:\/\//, '');
+    return `${base}databases/`;
+  }
+
+  private getBaseFileUrl(): string {
+    return cordova.file.applicationStorageDirectory;
   }
 
 }

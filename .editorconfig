@@ -11,7 +11,7 @@ trim_trailing_whitespace = true
 
 # Matches multiple files with brace expansion notation
 # Set default charset
-[*.{js,ts,scss,xml}]
+[*.{js,ts,scss,xml,html}]
 indent_size = 2
 
 [*.md]

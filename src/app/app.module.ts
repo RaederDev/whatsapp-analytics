@@ -8,6 +8,7 @@ import {FileUtils} from "../shared/file-utils.service";
 import {CordovaPluginRoot} from "../native/cordova-plugin-root.service";
 import {CordovaPluginSpinner} from "../native/cordova-plugin-spinner.service";
 import {CONFIG} from "./app.config";
+import {RepositoryFactory} from "../shared/data-access/repository-factory.service";
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import {CONFIG} from "./app.config";
     PromiseUtils,
     FileUtils,
     CordovaPluginRoot,
-    CordovaPluginSpinner
+    CordovaPluginSpinner,
+    RepositoryFactory
   ]
 })
 export class AppModule {
