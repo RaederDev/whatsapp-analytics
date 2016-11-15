@@ -9,7 +9,7 @@ export class Contact extends Entity {
   private jid: string;
   private isWhatsAppUser: boolean;
   private status: string;
-  private statusTimestamp: any; //moment-js function
+  private statusTimestamp: any;
 
   //WhatsApp has a bad structure here this can also contain an email like ID when dealing with a group
   //e.g. xxxxxxxxxx-xxxxxxxxxx@g.us

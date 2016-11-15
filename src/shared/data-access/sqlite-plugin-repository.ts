@@ -5,6 +5,8 @@ import Repository from "./repository.interface";
 import {Contact} from "./entity/contact";
 import {Config} from "ionic-angular";
 import {Injectable} from "@angular/core";
+import {isString, identity, conforms} from "lodash/fp";
+import {Entity} from "./entity/abstract.entity";
 
 @Injectable()
 export class SQLitePluginRepository implements Repository {
@@ -16,6 +18,10 @@ export class SQLitePluginRepository implements Repository {
   private connectionRequests: Array<Array<Function>> = [];
   private whatsAppMessageStoreDatabase: string;
   private whatsAppUserDatabase: string;
+  private isValidContact: (value: Entity, index: number) => boolean = conforms({
+    number: isString,
+    isWhatsAppUser: identity
+  });
 
   private STATEMENT_FETCH_ALL_CONTACTS = `SELECT jid, is_whatsapp_user, status, status_timestamp, number, display_name
                                           FROM wa_contacts`;
@@ -53,7 +59,8 @@ export class SQLitePluginRepository implements Repository {
         .then(() => this.waDb.executeSql(this.STATEMENT_FETCH_ALL_CONTACTS, []))
         .then(res => {
           const result: Array<Contact> = <Array<Contact>> this.collectionToArray(res.rows)
-            .map(contact => (new Contact()).copyColumnsToProperties(contact));
+            .map(contact => (new Contact()).copyColumnsToProperties(contact))
+            .filter(this.isValidContact); //remove invalid contacts
           resolve(result);
         })
         .catch(reject);

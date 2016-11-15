@@ -10,12 +10,16 @@ import {CordovaPluginSpinner} from "../native/cordova-plugin-spinner.service";
 import {CONFIG} from "./app.config";
 import {RepositoryFactory} from "../shared/data-access/repository-factory.service";
 import {SQLitePluginRepository} from "../shared/data-access/sqlite-plugin-repository";
+import {ContactList} from "../shared/components/contact-list/contact-list.component";
+import {StorageHelper} from "../shared/storage-helper.service";
+import {StateManagement} from "../shared/state-management.service";
 
 @NgModule({
   declarations: [
     MyApp,
     Home,
-    Page2
+    Page2,
+    ContactList
   ],
   imports: [
     IonicModule.forRoot(MyApp, CONFIG)
@@ -32,7 +36,9 @@ import {SQLitePluginRepository} from "../shared/data-access/sqlite-plugin-reposi
     CordovaPluginRoot,
     CordovaPluginSpinner,
     RepositoryFactory,
-    SQLitePluginRepository
+    SQLitePluginRepository,
+    StorageHelper,
+    StateManagement
   ]
 })
 export class AppModule {

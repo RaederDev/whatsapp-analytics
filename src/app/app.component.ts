@@ -4,6 +4,7 @@ import { StatusBar, Splashscreen } from 'ionic-native';
 
 import { Home } from '../pages/home/home';
 import { Page2 } from '../pages/page2/page2';
+import {StateManagement} from "../shared/state-management.service";
 
 
 @Component({
@@ -16,7 +17,10 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform) {
+  constructor(
+    public platform: Platform,
+    private stateManagement: StateManagement
+  ) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
@@ -29,8 +33,9 @@ export class MyApp {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
+      this.stateManagement.initApp()
+        .then(() => console.log('Initialized app'))
+        .catch(err => console.error('Failed to initialize app', err));
       StatusBar.styleDefault();
       Splashscreen.hide();
     });
