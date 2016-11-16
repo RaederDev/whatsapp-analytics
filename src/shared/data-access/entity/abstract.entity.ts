@@ -3,7 +3,7 @@ export abstract class Entity {
   //maps DB column -> entity property
   protected columnToPropertyMap: {} = {};
 
-  //maps entity propery -> DB column
+  //maps entity property -> DB column
   protected propertiesToColumnsMap: {} = {};
 
   /**

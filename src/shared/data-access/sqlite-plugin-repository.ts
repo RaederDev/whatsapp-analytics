@@ -43,6 +43,18 @@ export class SQLitePluginRepository implements Repository {
     });
   }
 
+  fetchAllContactsCount(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.fetchAllContacts().then(contacts => resolve(contacts.length)).catch(reject);
+    });
+  }
+
+  fetchAllGroupsCount(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.fetchAllGroups().then(contacts => resolve(contacts.length)).catch(reject);
+    });
+  }
+
   fetchAllGroups(): Promise<Array<Contact>> {
     return new Promise((resolve, reject) => {
       this.fetchGroupsAndContacts()

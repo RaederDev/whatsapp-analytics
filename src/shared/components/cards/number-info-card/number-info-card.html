@@ -1,0 +1,16 @@
+<ion-card class="info-card" *ngIf="valid">
+  <ion-card-header>
+    <div class="card-icon">
+      <ion-icon name="{{icon}}"></ion-icon>
+    </div>
+    <div class="card-header-text">{{title}}</div>
+  </ion-card-header>
+  <ion-card-content>
+    <h2 class="text">{{text}}</h2>
+  </ion-card-content>
+  <ion-row>
+    <ion-col>
+      <button ion-button clear item-right>View</button>
+    </ion-col>
+  </ion-row>
+</ion-card>

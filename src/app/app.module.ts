@@ -13,13 +13,15 @@ import {SQLitePluginRepository} from "../shared/data-access/sqlite-plugin-reposi
 import {ContactList} from "../shared/components/contact-list/contact-list.component";
 import {StorageHelper} from "../shared/storage-helper.service";
 import {StateManagement} from "../shared/state-management.service";
+import {NumberInfoCard} from "../shared/components/cards/number-info-card/number-info-card.component";
 
 @NgModule({
   declarations: [
     MyApp,
     Home,
     Page2,
-    ContactList
+    ContactList,
+    NumberInfoCard
   ],
   imports: [
     IonicModule.forRoot(MyApp, CONFIG)

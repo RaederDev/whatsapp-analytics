@@ -1,0 +1,14 @@
+.info-card {
+  ion-card-header {
+    background-color: color($colors, primary);
+    color: white;
+    text-align: center;
+    font-size: 1.8rem;
+    .card-icon {
+      position: absolute;
+    }
+  }
+  ion-row ion-col button[item-right] {
+    float: right;
+  }
+}
