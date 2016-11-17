@@ -12,12 +12,12 @@ import {Contacts} from "../../../../pages/contacts/contacts";
 export class NumberInfoCard implements OnChanges, OnInit {
 
   @Input()
-  private type: NumberInfoCardVariant;
+  public type: NumberInfoCardVariant;
 
+  public valid: boolean = false;
   private text: string = 'Loading...';
   private title: string;
   private icon: string;
-  private valid: boolean = false;
   private repository: Repository;
   private targetView: any;
 
@@ -26,6 +26,16 @@ export class NumberInfoCard implements OnChanges, OnInit {
     private navController: NavController
   ) {
     this.repository = this.repositoryFactory.getRepository();
+  }
+
+  ngOnInit(): void {
+    this.loadCardData();
+  }
+
+  ngOnChanges(changes: { [propName: string]: SimpleChange }): void {
+    const type: SimpleChange = changes['type'];
+    this.type = type.currentValue;
+    this.loadCardData();
   }
 
   private loadCardData() {
@@ -60,17 +70,7 @@ export class NumberInfoCard implements OnChanges, OnInit {
     this.icon = 'contacts';
   }
 
-  ngOnChanges(changes: { [propName: string]: SimpleChange }): void {
-    const type: SimpleChange = changes['type'];
-    this.type = type.currentValue;
-    this.loadCardData();
-  }
-
-  ngOnInit(): void {
-    this.loadCardData();
-  }
-
-  goToView() {
+  private goToView() {
     this.navController.push(this.targetView);
   }
 

@@ -8,7 +8,7 @@ import {NumberInfoCardVariant} from "../../shared/components/cards/number-info-c
 })
 export class Home {
 
-  private numberInfoCardVariant: any = NumberInfoCardVariant;
+  public numberInfoCardVariant: any = NumberInfoCardVariant;
 
   constructor(
     public navCtrl: NavController
