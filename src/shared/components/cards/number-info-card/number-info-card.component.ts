@@ -2,6 +2,8 @@ import {Component, OnChanges, SimpleChange, Input, OnInit} from "@angular/core";
 import {NumberInfoCardVariant} from "./number-info-card-variant";
 import {RepositoryFactory} from "../../../data-access/repository-factory.service";
 import Repository from "../../../data-access/repository.interface";
+import {NavController} from "ionic-angular";
+import {Contacts} from "../../../../pages/contacts/contacts";
 
 @Component({
   selector: 'number-info-card',
@@ -17,9 +19,11 @@ export class NumberInfoCard implements OnChanges, OnInit {
   private icon: string;
   private valid: boolean = false;
   private repository: Repository;
+  private targetView: any;
 
   constructor(
-    private repositoryFactory: RepositoryFactory
+    private repositoryFactory: RepositoryFactory,
+    private navController: NavController
   ) {
     this.repository = this.repositoryFactory.getRepository();
   }
@@ -45,6 +49,7 @@ export class NumberInfoCard implements OnChanges, OnInit {
       .catch(() => this.text = 'Error');
     this.title = 'Contacts';
     this.icon = 'contact';
+    this.targetView = Contacts;
   }
 
   private loadGroupsCard() {
@@ -63,6 +68,10 @@ export class NumberInfoCard implements OnChanges, OnInit {
 
   ngOnInit(): void {
     this.loadCardData();
+  }
+
+  goToView() {
+    this.navController.push(this.targetView);
   }
 
 }

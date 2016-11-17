@@ -1,12 +1,9 @@
 <ion-list>
-  <ion-list-header>
-    Contacts
-  </ion-list-header>
-  <ion-item *ngFor="let contact of contacts">
+  <button ion-item *ngFor="let contact of contacts">
     <h2>{{contact.displayName}}</h2>
     <p *ngIf="contact.status">{{contact.status}}</p>
     <p *ngIf="!contact.status">&nbsp;</p>
-  </ion-item>
+  </button>
   <ion-item *ngIf="contacts.length < 1">
     <h2>Loading...</h2>
   </ion-item>

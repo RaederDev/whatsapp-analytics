@@ -3,10 +3,11 @@
 import {SQLite} from 'ionic-native';
 import Repository from "./repository.interface";
 import {Contact} from "./entity/contact";
-import {Config} from "ionic-angular";
+import {Config, Events} from "ionic-angular";
 import {Injectable} from "@angular/core";
 import {isString, identity, conforms} from "lodash/fp";
 import {Entity} from "./entity/abstract.entity";
+import {FileUtils} from "../file-utils.service";
 
 @Injectable()
 export class SQLitePluginRepository implements Repository {
@@ -15,6 +16,7 @@ export class SQLitePluginRepository implements Repository {
   private waDb: SQLite;
   private isConnected: boolean = false;
   private isConnecting: boolean = false;
+  private hasOpenedDatabases: boolean = false;
   private connectionRequests: Array<Array<Function>> = [];
   private whatsAppMessageStoreDatabase: string;
   private whatsAppUserDatabase: string;
@@ -27,7 +29,9 @@ export class SQLitePluginRepository implements Repository {
                                           FROM wa_contacts`;
 
   constructor(
-    private config: Config
+    private config: Config,
+    private fileUtils: FileUtils,
+    private events: Events
   ) {
     this.whatsAppMessageStoreDatabase = this.config.get('whatsAppMessageStoreDatabase');
     this.whatsAppUserDatabase = this.config.get('whatsAppUserDatabase');
@@ -115,36 +119,52 @@ export class SQLitePluginRepository implements Repository {
 
       if(!this.isConnecting) {
 
-        //create the plugin instances
+        //lock
         this.isConnecting = true;
-        this.msgStoreDb = new SQLite();
-        this.waDb = new SQLite();
 
-        //try to open both databases
-        Promise.all([
-          this.msgStoreDb.openDatabase({
-            name: this.whatsAppMessageStoreDatabase,
-            location: 'default'
-          }),
-          this.waDb.openDatabase({
-            name: this.whatsAppUserDatabase,
-            location: 'default'
-          })
-        ]).then(() => {
-          //success
-          this.isConnecting = false;
-          this.isConnected = true;
-
-          //execute all resolve functions
-          this.connectionRequests.forEach(fns => fns[0]());
-        }).catch(err => {
-          console.error(err);
-          //execute all reject functions
-          this.connectionRequests.forEach(fns => fns[1]())
-        });
-
+        if(this.fileUtils.getHasCopiedDatabases()) {
+          this.openDatabases();
+        } else {
+          this.addCopySubscriptionHandler();
+        }
       }
 
+    });
+  }
+
+  private addCopySubscriptionHandler() {
+    const handler = () => {
+      console.log('Opening databases');
+      this.openDatabases();
+      this.events.unsubscribe(FileUtils.EVENT_DATA_COPIED, handler);
+    };
+    this.events.subscribe(FileUtils.EVENT_DATA_COPIED, handler);
+  }
+
+  private openDatabases() {
+    this.msgStoreDb = new SQLite();
+    this.waDb = new SQLite();
+    //try to open both databases
+    Promise.all([
+      this.msgStoreDb.openDatabase({
+        name: this.whatsAppMessageStoreDatabase,
+        location: 'default'
+      }),
+      this.waDb.openDatabase({
+        name: this.whatsAppUserDatabase,
+        location: 'default'
+      })
+    ]).then(() => {
+      //success
+      this.isConnecting = false;
+      this.isConnected = true;
+
+      //execute all resolve functions
+      this.connectionRequests.forEach(fns => fns[0]());
+    }).catch(err => {
+      console.error(err);
+      //execute all reject functions
+      this.connectionRequests.forEach(fns => fns[1]())
     });
   }
 

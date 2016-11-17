@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {File, DirectoryEntry} from "ionic-native";
 import {CordovaPluginRoot} from "../native/cordova-plugin-root.service";
-import {Config} from "ionic-angular";
+import {Config, Events} from "ionic-angular";
 import {compact} from "lodash/fp";
 
 @Injectable()
@@ -9,10 +9,14 @@ export class FileUtils {
 
   private whatsAppDatabaseFolder: string;
   private whatsAppDatabases: Array<string>;
+  private hasCopiedDatabases: boolean = false;
+
+  public static EVENT_DATA_COPIED = 'FileUtils.dataCopiedEvent';
 
   constructor(
     private cordovaPluginRoot: CordovaPluginRoot,
-    private config: Config
+    private config: Config,
+    private events: Events
   ) {
     this.whatsAppDatabaseFolder = this.config.get('whatsAppDatabaseFolder');
     this.whatsAppDatabases = this.config.get('whatsAppDatabases');
@@ -43,12 +47,20 @@ export class FileUtils {
 
           Promise.all(promises)
             .then(this.doAllDatabasesExist.bind(this))
-            .then(resolve)
+            .then(() => {
+              this.hasCopiedDatabases = true;
+              this.events.publish(FileUtils.EVENT_DATA_COPIED);
+              resolve();
+            })
             .catch(reject);
 
         }).catch(reject);
       }).catch(reject);
     });
+  }
+
+  public getHasCopiedDatabases(): boolean {
+    return this.hasCopiedDatabases;
   }
 
   /**
