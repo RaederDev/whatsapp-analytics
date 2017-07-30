@@ -23,29 +23,20 @@ export class StateManagement {
    *
    * @return {Promise<T>}
    */
-  public initApp(): Promise<any> {
-    return new Promise((resolve, reject) => {
-
-      //init application
-      this.hasShownRootPopup()
-        .then((hasShownRootPopup: boolean) => {
-            if(!hasShownRootPopup) {
-              return this.showRootPopup();
-            }
-            this.cordovaPluginSpinner.activityStart();
-            return this.fileUtils.copyDatabaseToTemp();
-        })
-        .then(() => {
-          this.cordovaPluginSpinner.activityStop();
-          resolve();
-        })
-        .catch(err => {
-          this.showCopyFailedPopup();
-          this.cordovaPluginSpinner.activityStop();
-          reject(err);
-        });
-
-    });
+  public async initApp(): Promise<any> {
+    try {
+      const hasShownRootPopup = await this.hasShownRootPopup();
+      if(!hasShownRootPopup) {
+        await this.showRootPopup();
+      }
+      this.cordovaPluginSpinner.activityStart();
+      await this.fileUtils.copyDatabaseToTemp();
+      this.cordovaPluginSpinner.activityStop();
+    } catch(e) {
+      this.showCopyFailedPopup();
+      this.cordovaPluginSpinner.activityStop();
+      throw e;
+    }
   }
 
   /**

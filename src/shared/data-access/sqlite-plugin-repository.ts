@@ -16,7 +16,6 @@ export class SQLitePluginRepository implements Repository {
   private waDb: SQLite;
   private isConnected: boolean = false;
   private isConnecting: boolean = false;
-  private hasOpenedDatabases: boolean = false;
   private connectionRequests: Array<Array<Function>> = [];
   private whatsAppMessageStoreDatabase: string;
   private whatsAppUserDatabase: string;
@@ -37,50 +36,30 @@ export class SQLitePluginRepository implements Repository {
     this.whatsAppUserDatabase = this.config.get('whatsAppUserDatabase');
   }
 
-  fetchAllContacts(): Promise<Array<Contact>> {
-    return new Promise((resolve, reject) => {
-      this.fetchGroupsAndContacts()
-        .then((contacts: Array<Contact>) => {
-          resolve(contacts.filter(contact => !contact.isGroup()));
-        })
-        .catch(reject);
-    });
+  async fetchAllContacts(): Promise<Array<Contact>> {
+    return (await this.fetchGroupsAndContacts())
+      .filter(contact => !contact.isGroup());
   }
 
-  fetchAllContactsCount(): Promise<number> {
-    return new Promise((resolve, reject) => {
-      this.fetchAllContacts().then(contacts => resolve(contacts.length)).catch(reject);
-    });
+  async fetchAllContactsCount(): Promise<number> {
+    return (await this.fetchAllContacts()).length;
   }
 
-  fetchAllGroupsCount(): Promise<number> {
-    return new Promise((resolve, reject) => {
-      this.fetchAllGroups().then(contacts => resolve(contacts.length)).catch(reject);
-    });
+  async fetchAllGroupsCount(): Promise<number> {
+    return (await this.fetchAllGroups()).length;
   }
 
-  fetchAllGroups(): Promise<Array<Contact>> {
-    return new Promise((resolve, reject) => {
-      this.fetchGroupsAndContacts()
-        .then((contacts: Array<Contact>) => {
-          resolve(contacts.filter(contact => contact.isGroup()));
-        })
-        .catch(reject);
-    });
+  async fetchAllGroups(): Promise<Array<Contact>> {
+    return (await this.fetchGroupsAndContacts())
+      .filter(contact => contact.isGroup());
   }
 
-  private fetchGroupsAndContacts(): Promise<Array<Contact>> {
-    return new Promise((resolve, reject) => {
-      this.connect()
-        .then(() => this.waDb.executeSql(this.STATEMENT_FETCH_ALL_CONTACTS, []))
-        .then(res => {
-          const result: Array<Contact> = <Array<Contact>> this.collectionToArray(res.rows)
-            .map(contact => (new Contact()).copyColumnsToProperties(contact))
-            .filter(this.isValidContact); //remove invalid contacts
-          resolve(result);
-        })
-        .catch(reject);
-    });
+  private async fetchGroupsAndContacts(): Promise<Array<Contact>> {
+    await this.connect();
+    const sqlResult = await this.waDb.executeSql(this.STATEMENT_FETCH_ALL_CONTACTS, []);
+    return <Array<Contact>> this.collectionToArray(sqlResult.rows)
+      .map(contact => (new Contact()).copyColumnsToProperties(contact))
+      .filter(this.isValidContact); //remove invalid contacts
   }
 
   /**
@@ -141,31 +120,34 @@ export class SQLitePluginRepository implements Repository {
     this.events.subscribe(FileUtils.EVENT_DATA_COPIED, handler);
   }
 
-  private openDatabases() {
+  private async openDatabases() {
     this.msgStoreDb = new SQLite();
     this.waDb = new SQLite();
-    //try to open both databases
-    Promise.all([
-      this.msgStoreDb.openDatabase({
-        name: this.whatsAppMessageStoreDatabase,
-        location: 'default'
-      }),
-      this.waDb.openDatabase({
-        name: this.whatsAppUserDatabase,
-        location: 'default'
-      })
-    ]).then(() => {
+
+    try {
+      //try to open both databases
+      await Promise.all([
+        this.msgStoreDb.openDatabase({
+          name: this.whatsAppMessageStoreDatabase,
+          location: 'default'
+        }),
+        this.waDb.openDatabase({
+          name: this.whatsAppUserDatabase,
+          location: 'default'
+        })
+      ]);
+
       //success
       this.isConnecting = false;
       this.isConnected = true;
 
       //execute all resolve functions
       this.connectionRequests.forEach(fns => fns[0]());
-    }).catch(err => {
+    } catch(err) {
       console.error(err);
       //execute all reject functions
       this.connectionRequests.forEach(fns => fns[1]())
-    });
+    }
   }
 
 }
