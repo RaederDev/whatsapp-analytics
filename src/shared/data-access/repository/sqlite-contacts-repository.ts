@@ -3,7 +3,7 @@ import {Injectable} from "@angular/core";
 import {isString, identity, conforms} from "lodash/fp";
 import {Entity} from "../entity/abstract.entity";
 import {ConnectionHandlerService} from "./connection-handler.service";
-import {AbstractRepository} from "./abstract-repository";
+import {AbstractRepository} from "./abstract.repository";
 import ContactsRepository from "./contacts-repository.interface";
 
 @Injectable()

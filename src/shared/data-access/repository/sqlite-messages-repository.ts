@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {isString, identity, conforms} from "lodash/fp";
 import {ConnectionHandlerService} from "./connection-handler.service";
-import {AbstractRepository} from "./abstract-repository";
+import {AbstractRepository} from "./abstract.repository";
 import MessagesRepositoryInterface from "./messages-repository.interface";
 import {Message} from "../entity/message";
 
