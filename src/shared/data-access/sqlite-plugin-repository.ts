@@ -103,7 +103,7 @@ export class SQLitePluginRepository implements Repository {
    *
    * @return {Promise}
    */
-  private connect(): Promise<void> {
+  private connect(): Promise<any> {
 
     //check if we are already connected
     if(this.isConnected) {

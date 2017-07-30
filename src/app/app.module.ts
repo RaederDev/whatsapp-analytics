@@ -1,5 +1,7 @@
 import {NgModule} from "@angular/core";
-import {IonicApp, IonicModule} from "ionic-angular";
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpModule} from "@angular/http";
+import {IonicModule, IonicApp} from "ionic-angular";
 import {MyApp} from "./app.component";
 import {Home} from "../pages/home/home";
 import {Contacts} from "../pages/contacts/contacts";
@@ -14,6 +16,7 @@ import {ContactList} from "../shared/components/contact-list/contact-list.compon
 import {StorageHelper} from "../shared/storage-helper.service";
 import {StateManagement} from "../shared/state-management.service";
 import {NumberInfoCard} from "../shared/components/cards/number-info-card/number-info-card.component";
+import {IonicStorageModule} from "@ionic/storage";
 
 @NgModule({
   declarations: [
@@ -24,7 +27,10 @@ import {NumberInfoCard} from "../shared/components/cards/number-info-card/number
     NumberInfoCard
   ],
   imports: [
-    IonicModule.forRoot(MyApp, CONFIG)
+    BrowserModule,
+    HttpModule,
+    IonicModule.forRoot(MyApp, CONFIG),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [

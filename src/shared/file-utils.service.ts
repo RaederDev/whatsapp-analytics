@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {File, DirectoryEntry} from "ionic-native";
 import {CordovaPluginRoot} from "../native/cordova-plugin-root.service";
-import {Config, Events} from "ionic-angular";
+import {Events, Config} from "ionic-angular";
 import {compact} from "lodash/fp";
 
 @Injectable()
@@ -27,7 +27,7 @@ export class FileUtils {
    *
    * @return {Promise<void>}
    */
-  public copyDatabaseToTemp(): Promise<void> {
+  public copyDatabaseToTemp(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.cordovaPluginRoot.isAvailable().then(res => {
 
@@ -41,8 +41,8 @@ export class FileUtils {
           const targetDir: string = this.getDatabaseDirectory();
           const promises = this.whatsAppDatabases.map(db => {
             //cp is not available on all devices so we have to cat the file instead
-            //return this.cordovaPluginRoot.run(`cat ${this.whatsAppDatabaseFolder}${db} > ${targetDir}${db}`);
-            return Promise.resolve([]); //todo: remove
+            return this.cordovaPluginRoot.run(`cat ${this.whatsAppDatabaseFolder}${db} > ${targetDir}${db}`);
+            //return Promise.resolve([]); //todo: remove
           });
 
           Promise.all(promises)

@@ -1,10 +1,21 @@
 import {Injectable} from "@angular/core";
-import {compact} from "lodash/fp";
+import {compact, isString} from "lodash/fp";
 import {Storage} from "@ionic/storage";
-import {isString} from "lodash/fp";
 
 @Injectable()
-export class StorageHelper extends Storage {
+export class StorageHelper {
+
+  constructor(
+    private storage: Storage
+  ) {};
+
+  get(key: string) {
+    return this.storage.get(key);
+  }
+
+  set(key: string, value: any) {
+    return this.storage.set(key, value);
+  }
 
   /**
    * Sets a boolean value for the given key.
@@ -14,7 +25,7 @@ export class StorageHelper extends Storage {
    * @return Promise that resolves when the value is set
    */
   setBoolean(key: string, value: boolean): Promise<any> {
-    return this.set(key, Boolean(value).toString());
+    return this.storage.set(key, Boolean(value).toString());
   }
 
   /**
@@ -26,7 +37,7 @@ export class StorageHelper extends Storage {
    */
   getBoolean(key: string) {
     return new Promise((resolve, reject) => {
-      this.get(key).then(res => {
+      this.storage.get(key).then(res => {
         resolve(res === 'true');
       }).catch(reject);
     });
@@ -40,7 +51,7 @@ export class StorageHelper extends Storage {
    * @return Promise that resolves when the value is set
    */
   setObject(key: string, value: boolean): Promise<any> {
-    return this.set(key, JSON.stringify(value));
+    return this.storage.set(key, JSON.stringify(value));
   }
 
   /**
@@ -53,7 +64,7 @@ export class StorageHelper extends Storage {
    */
   getObject(key: string) {
     return new Promise((resolve, reject) => {
-      this.get(key).then(res => {
+      this.storage.get(key).then(res => {
         if (!isString(res)) {
           resolve(null);
         } else {
