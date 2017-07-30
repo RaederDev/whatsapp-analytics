@@ -1,4 +1,5 @@
 export enum NumberInfoCardVariant {
   Contacts,
-  Groups
+  Groups,
+  Messages
 }

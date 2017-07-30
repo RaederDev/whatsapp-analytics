@@ -18,6 +18,7 @@ import {StateManagement} from "../shared/state-management.service";
 import {NumberInfoCard} from "../shared/components/cards/number-info-card/number-info-card.component";
 import {IonicStorageModule} from "@ionic/storage";
 import {ConnectionHandlerService} from "../shared/data-access/repository/connection-handler.service";
+import {SqliteMessagesRepository} from "../shared/data-access/repository/sqlite-messages-repository";
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import {ConnectionHandlerService} from "../shared/data-access/repository/connect
     CordovaPluginSpinner,
     RepositoryFactory,
     SQLiteContactsRepository,
+    SqliteMessagesRepository,
     StorageHelper,
     StateManagement,
     ConnectionHandlerService

@@ -6,15 +6,15 @@ const GROUP_IDENTIFIER = '@s.whatsapp.net';
 
 export class Contact extends Entity {
 
-  private jid: string;
-  private isWhatsAppUser: boolean;
-  private status: string;
-  private statusTimestamp: any;
+  public jid: string;
+  public isWhatsAppUser: boolean;
+  public status: string;
+  public statusTimestamp: any;
 
   //WhatsApp has a bad structure here this can also contain an email like ID when dealing with a group
   //e.g. xxxxxxxxxx-xxxxxxxxxx@g.us
-  private number: string;
-  private displayName: string;
+  public number: string;
+  public displayName: string;
 
   constructor() {
     super('Contact', {

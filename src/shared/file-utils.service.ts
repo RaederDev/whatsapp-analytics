@@ -41,8 +41,8 @@ export class FileUtils {
           const targetDir: string = this.getDatabaseDirectory();
           const promises = this.whatsAppDatabases.map(db => {
             //cp is not available on all devices so we have to cat the file instead
-            //return this.cordovaPluginRoot.run(`cat ${this.whatsAppDatabaseFolder}${db} > ${targetDir}${db}`);
-            return Promise.resolve([]); //todo: remove
+            return this.cordovaPluginRoot.run(`cat ${this.whatsAppDatabaseFolder}${db} > ${targetDir}${db}`);
+            //return Promise.resolve([]); //todo: remove
           });
 
           Promise.all(promises)

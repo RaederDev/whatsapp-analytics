@@ -1,9 +1,10 @@
 import {Component, OnChanges, SimpleChange, Input, OnInit} from "@angular/core";
 import {NumberInfoCardVariant} from "./number-info-card-variant";
 import {RepositoryFactory} from "../../../data-access/repository/repository-factory.service";
-import Repository from "../../../data-access/repository/contacts-repository.interface";
 import {NavController} from "ionic-angular";
 import {Contacts} from "../../../../pages/contacts/contacts";
+import MessagesRepository from "../../../data-access/repository/messages-repository.interface";
+import ContactsRepository from "../../../data-access/repository/contacts-repository.interface";
 
 @Component({
   selector: 'number-info-card',
@@ -18,14 +19,16 @@ export class NumberInfoCard implements OnChanges, OnInit {
   private text: string = 'Loading...';
   private title: string;
   private icon: string;
-  private repository: Repository;
+  private contactsRepository: ContactsRepository;
+  private messagesRepository: MessagesRepository;
   private targetView: any;
 
   constructor(
     private repositoryFactory: RepositoryFactory,
     private navController: NavController
   ) {
-    this.repository = this.repositoryFactory.getContactsRepository();
+    this.contactsRepository = this.repositoryFactory.getContactsRepository();
+    this.messagesRepository = this.repositoryFactory.getMessagesRepository();
   }
 
   ngOnInit(): void {
@@ -46,6 +49,9 @@ export class NumberInfoCard implements OnChanges, OnInit {
       case NumberInfoCardVariant.Groups:
         this.loadGroupsCard();
         break;
+      case NumberInfoCardVariant.Messages:
+        this.loadMessagesCard();
+        break;
       default:
         this.valid = false;
         return;
@@ -53,8 +59,16 @@ export class NumberInfoCard implements OnChanges, OnInit {
     this.valid = true;
   }
 
+  private async loadMessagesCard() {
+    const numberOfMessages = await this.messagesRepository.fetchMessagesCount();
+    this.title = 'Messages';
+    this.icon = 'mail';
+    this.targetView = Contacts;
+    this.text = numberOfMessages.toString();
+  }
+
   private loadContactCard() {
-    this.repository.fetchAllContactsCount()
+    this.contactsRepository.fetchAllContactsCount()
       .then(numberOfContacts => this.text = numberOfContacts.toString())
       .catch(() => this.text = 'Error');
     this.title = 'Contacts';
@@ -63,7 +77,7 @@ export class NumberInfoCard implements OnChanges, OnInit {
   }
 
   private loadGroupsCard() {
-    this.repository.fetchAllGroupsCount()
+    this.contactsRepository.fetchAllGroupsCount()
       .then(numberOfContacts => this.text = numberOfContacts.toString())
       .catch(() => this.text = 'Error');
     this.title = 'Groups';

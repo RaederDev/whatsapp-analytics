@@ -2,12 +2,13 @@ import {Entity} from "./abstract.entity";
 
 export class Message extends Entity {
 
-  private remoteJid: string;
-  private fromMe: number;
-  private id: string;
-  private status: number;
-  private data: any;
-  private timestamp: number;
+  public remoteJid: string;
+  public fromMe: number;
+  public id: string;
+  public status: number;
+  public data: any;
+  public timestamp: number;
+  public mediaMimeType: string;
 
   constructor() {
     super('Message', {
@@ -16,7 +17,8 @@ export class Message extends Entity {
       id: 'key_id',
       status: 'status',
       data: 'data',
-      timestamp: 'timestamp'
+      timestamp: 'timestamp',
+      mediaMimeType: 'media_mime_type'
     });
   }
 

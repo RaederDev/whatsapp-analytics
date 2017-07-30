@@ -1,10 +1,8 @@
-import {Contact} from "../entity/contact";
+import {Message} from "../entity/message";
 
-interface MessagesRepositoryInterface {
-  fetchAllContacts: () => Promise<Array<Contact>>;
-  fetchAllGroups: () => Promise<Array<Contact>>;
-  fetchAllContactsCount: () => Promise<number>;
-  fetchAllGroupsCount: () => Promise<number>;
+interface MessagesRepository {
+  fetchAllMessages: () => Promise<Array<Message>>;
+  fetchMessagesCount: () => Promise<number>;
 }
 
-export default MessagesRepositoryInterface;
+export default MessagesRepository;
