@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, OnChanges, SimpleChanges, SimpleChange} from "@angular/core";
 import {Contact} from "../../data-access/entity/contact";
-import {RepositoryFactory} from "../../data-access/repository-factory.service";
-import Repository from "../../data-access/repository.interface";
+import {RepositoryFactory} from "../../data-access/repository/repository-factory.service";
+import Repository from "../../data-access/repository/contacts-repository.interface";
 import isUndefined from "lodash/fp";
 
 @Component({
@@ -22,7 +22,7 @@ export class ContactList implements OnChanges, OnInit {
   constructor(
     private repositoryFactory: RepositoryFactory
   ) {
-    this.repository = this.repositoryFactory.getRepository();
+    this.repository = this.repositoryFactory.getContactsRepository();
   }
 
   ngOnInit(): void {

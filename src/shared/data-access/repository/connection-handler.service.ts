@@ -1,31 +1,19 @@
-//todo: it would be nice to find a way to integrate a proper ORM solution here
-//todo: repository is probably not a very good name since it doesn't fit the traditional ORM pattern
 import {SQLite} from 'ionic-native';
-import Repository from "./repository.interface";
-import {Contact} from "./entity/contact";
 import {Config, Events} from "ionic-angular";
 import {Injectable} from "@angular/core";
 import {isString, identity, conforms} from "lodash/fp";
-import {Entity} from "./entity/abstract.entity";
-import {FileUtils} from "../file-utils.service";
+import {FileUtils} from "../../file-utils.service";
 
 @Injectable()
-export class SQLitePluginRepository implements Repository {
+export class ConnectionHandlerService {
 
-  private msgStoreDb: SQLite;
-  private waDb: SQLite;
+  private _msgStoreDb: SQLite;
+  private _waDb: SQLite;
   private isConnected: boolean = false;
   private isConnecting: boolean = false;
   private connectionRequests: Array<Array<Function>> = [];
   private whatsAppMessageStoreDatabase: string;
   private whatsAppUserDatabase: string;
-  private isValidContact: (value: Entity, index: number) => boolean = conforms({
-    number: isString,
-    isWhatsAppUser: identity
-  });
-
-  private STATEMENT_FETCH_ALL_CONTACTS = `SELECT jid, is_whatsapp_user, status, status_timestamp, number, display_name
-                                          FROM wa_contacts`;
 
   constructor(
     private config: Config,
@@ -36,45 +24,12 @@ export class SQLitePluginRepository implements Repository {
     this.whatsAppUserDatabase = this.config.get('whatsAppUserDatabase');
   }
 
-  async fetchAllContacts(): Promise<Array<Contact>> {
-    return (await this.fetchGroupsAndContacts())
-      .filter(contact => !contact.isGroup());
+  get msgStoreDb(): SQLite {
+    return this._msgStoreDb;
   }
 
-  async fetchAllContactsCount(): Promise<number> {
-    return (await this.fetchAllContacts()).length;
-  }
-
-  async fetchAllGroupsCount(): Promise<number> {
-    return (await this.fetchAllGroups()).length;
-  }
-
-  async fetchAllGroups(): Promise<Array<Contact>> {
-    return (await this.fetchGroupsAndContacts())
-      .filter(contact => contact.isGroup());
-  }
-
-  private async fetchGroupsAndContacts(): Promise<Array<Contact>> {
-    await this.connect();
-    const sqlResult = await this.waDb.executeSql(this.STATEMENT_FETCH_ALL_CONTACTS, []);
-    return <Array<Contact>> this.collectionToArray(sqlResult.rows)
-      .map(contact => (new Contact()).copyColumnsToProperties(contact))
-      .filter(this.isValidContact); //remove invalid contacts
-  }
-
-  /**
-   * Takes an HTMLCollection like structure and converts it to an Array.
-   * The SQLite plugin returns all results like this.
-   *
-   * @param res
-   * @return {Array}
-   */
-  private collectionToArray(res: HTMLCollection) {
-    const extracted = [];
-    for(let i = 0; i < res.length; i++) {
-      extracted.push(res.item(i));
-    }
-    return extracted;
+  get waDb(): SQLite {
+    return this._waDb;
   }
 
   /**
@@ -82,7 +37,7 @@ export class SQLitePluginRepository implements Repository {
    *
    * @return {Promise}
    */
-  private connect(): Promise<any> {
+  public connect(): Promise<any> {
 
     //check if we are already connected
     if(this.isConnected) {
@@ -111,7 +66,7 @@ export class SQLitePluginRepository implements Repository {
     });
   }
 
-  private addCopySubscriptionHandler() {
+  public addCopySubscriptionHandler() {
     const handler = () => {
       console.log('Opening databases');
       this.openDatabases();
@@ -120,18 +75,18 @@ export class SQLitePluginRepository implements Repository {
     this.events.subscribe(FileUtils.EVENT_DATA_COPIED, handler);
   }
 
-  private async openDatabases() {
-    this.msgStoreDb = new SQLite();
-    this.waDb = new SQLite();
+  public async openDatabases() {
+    this._msgStoreDb = new SQLite();
+    this._waDb = new SQLite();
 
     try {
       //try to open both databases
       await Promise.all([
-        this.msgStoreDb.openDatabase({
+        this._msgStoreDb.openDatabase({
           name: this.whatsAppMessageStoreDatabase,
           location: 'default'
         }),
-        this.waDb.openDatabase({
+        this._waDb.openDatabase({
           name: this.whatsAppUserDatabase,
           location: 'default'
         })
