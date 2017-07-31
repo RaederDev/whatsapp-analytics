@@ -16,12 +16,19 @@ export class NumberInfoCard implements OnChanges, OnInit {
   public type: NumberInfoCardVariant;
 
   public valid: boolean = false;
-  private text: string = 'Loading...';
+  private text: string = '...';
   private title: string;
   private icon: string;
   private contactsRepository: ContactsRepository;
   private messagesRepository: MessagesRepository;
+  private numberInfoCardVariant: any = NumberInfoCardVariant;
   private targetView: any;
+
+  //messages card
+  private numberOfMessages: number = 0;
+  private numberOfOwnMessages: number = 0;
+  private numberOfOtherMessages: number = 0;
+  private numberOfMediaMessages: number = 0;
 
   constructor(
     private repositoryFactory: RepositoryFactory,
@@ -60,11 +67,13 @@ export class NumberInfoCard implements OnChanges, OnInit {
   }
 
   private async loadMessagesCard() {
-    const numberOfMessages = await this.messagesRepository.fetchMessagesCount();
     this.title = 'Messages';
     this.icon = 'mail';
     this.targetView = Contacts;
-    this.text = numberOfMessages.toString();
+    this.numberOfMessages = await this.messagesRepository.fetchMessagesCount();
+    this.numberOfOwnMessages = await this.messagesRepository.fetchOwnMessagesCount();
+    this.numberOfOtherMessages = await this.messagesRepository.fetchOtherMessagesCount();
+    this.numberOfMediaMessages = await this.messagesRepository.fetchMediaMessagesCount();
   }
 
   private loadContactCard() {

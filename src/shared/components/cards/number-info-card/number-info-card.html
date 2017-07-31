@@ -5,8 +5,32 @@
     </div>
     <div class="card-header-text">{{title}}</div>
   </ion-card-header>
-  <ion-card-content>
-    <h2 class="text">{{text}}</h2>
+  <ion-card-content [ngSwitch]="type">
+    <div *ngSwitchCase="numberInfoCardVariant.Messages">
+      <div class="messages-list">
+        <ul>
+          <li>
+            <div class="messages-list-header">Messages</div>
+            <div class="messages-list-content">{{ numberOfMessages | numeral }}</div>
+          </li>
+          <li>
+            <div class="messages-list-header">Your Messages</div>
+            <div class="messages-list-content">{{ numberOfOwnMessages | numeral }}</div>
+          </li>
+          <li>
+            <div class="messages-list-header">Received Messages</div>
+            <div class="messages-list-content">{{ numberOfOtherMessages | numeral }}</div>
+          </li>
+          <li>
+            <div class="messages-list-header">Messages with Media</div>
+            <div class="messages-list-content">{{ numberOfMediaMessages | numeral }}</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div *ngSwitchDefault>
+      <h2 class="text">{{text}}</h2>
+    </div>
   </ion-card-content>
   <ion-row>
     <ion-col>

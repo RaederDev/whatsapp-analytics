@@ -19,6 +19,7 @@ import {NumberInfoCard} from "../shared/components/cards/number-info-card/number
 import {IonicStorageModule} from "@ionic/storage";
 import {ConnectionHandlerService} from "../shared/data-access/repository/connection-handler.service";
 import {SqliteMessagesRepository} from "../shared/data-access/repository/sqlite-messages-repository";
+import {NumeralPipe} from "../shared/pipes/numeral.pipe";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {SqliteMessagesRepository} from "../shared/data-access/repository/sqlite-
     Home,
     Contacts,
     ContactList,
-    NumberInfoCard
+    NumberInfoCard,
+    NumeralPipe
   ],
   imports: [
     BrowserModule,

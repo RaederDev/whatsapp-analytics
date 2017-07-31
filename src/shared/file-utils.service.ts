@@ -3,6 +3,8 @@ import {File, DirectoryEntry} from "ionic-native";
 import {CordovaPluginRoot} from "../native/cordova-plugin-root.service";
 import {Events, Config} from "ionic-angular";
 import {compact} from "lodash/fp";
+import {Log} from "ng2-logger";
+import {Logger} from "ng2-logger/src/logger";
 
 @Injectable()
 export class FileUtils {
@@ -10,6 +12,8 @@ export class FileUtils {
   private whatsAppDatabaseFolder: string;
   private whatsAppDatabases: Array<string>;
   private hasCopiedDatabases: boolean = false;
+  private copyDatabase: boolean;
+  private logger: Logger<any>;
 
   public static EVENT_DATA_COPIED = 'FileUtils.dataCopiedEvent';
 
@@ -20,6 +24,8 @@ export class FileUtils {
   ) {
     this.whatsAppDatabaseFolder = this.config.get('whatsAppDatabaseFolder');
     this.whatsAppDatabases = this.config.get('whatsAppDatabases');
+    this.copyDatabase = this.config.getBoolean('copyDatabase', true);
+    this.logger = Log.create(this.constructor.name);
   };
 
   /**
@@ -40,9 +46,14 @@ export class FileUtils {
 
           const targetDir: string = this.getDatabaseDirectory();
           const promises = this.whatsAppDatabases.map(db => {
-            //cp is not available on all devices so we have to cat the file instead
-            return this.cordovaPluginRoot.run(`cat ${this.whatsAppDatabaseFolder}${db} > ${targetDir}${db}`);
-            //return Promise.resolve([]); //todo: remove
+            if(this.copyDatabase) {
+              this.logger.info('Copying database');
+              //cp is not available on all devices so we have to cat the file instead
+              return this.cordovaPluginRoot.run(`cat ${this.whatsAppDatabaseFolder}${db} > ${targetDir}${db}`);
+            } else {
+              this.logger.warn('Skipping database copy');
+              return Promise.resolve([]);
+            }
           });
 
           Promise.all(promises)

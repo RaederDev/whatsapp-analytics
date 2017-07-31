@@ -5,5 +5,9 @@ export const CONFIG = {
   whatsAppDatabases: [
     'msgstore.db',
     'wa.db'
-  ]
+  ],
+
+  //change this flag to stop the app from copying the database around all the time
+  //during development
+  copyDatabase: false
 };
